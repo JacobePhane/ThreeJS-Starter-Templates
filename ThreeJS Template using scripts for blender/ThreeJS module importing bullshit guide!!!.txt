@@ -1,0 +1,46 @@
+﻿Starting from a threejs project where everything is imported from a cdn:
+
+
+(Note you definitely need a way to clear cache for the changes to take effect after restarting the http-server)
+
+
+I added html script tags to import each threejs related script from a folder: Notice each one has the src=”./..”  with “./” first. That’s calling things by relative reference. Also I needed to use type=”module” or I got another error about not having that module or it not being a module or something. 
+
+
+<script src="./scripts/three.module.js" type="module"></script>
+<script src="./scripts/OrbitControls.js" type="module"></script>
+<script src="./scripts/GLTFLoader.js" type="module"></script>
+
+
+Then in each of orbitcontrols, gltfLoader and the project js script I found they all tried to access the threejs script as if it was in the name space “import {... … … list of all functions}  from three” or something like that. So I changed the “three” to './three.module.js'; for the main project script it’s “import * as THREE from './three.module.js';”
+
+
+However I still get this error on the console:  "GET /three.module.js" Error (404): "Not found"
+
+
+Ok that error was because the mail project script is in the parent folder not the scrips folder so it needs to use './scripts/three.module.js'; to access three.module.js
+
+
+Now I get another error this time in the web console:
+OrbitControls is not defined
+    at main (index.js:83:22)
+    at (index):34:9
+
+
+Added:
+import { OrbitControls } from './scripts/OrbitControls.js';
+ 
+Then I got the same error about the GLTF loader and used:
+import { GLTFLoader } from './scripts/GLTFLoader.js';
+
+
+And it works!!!!
+
+
+I left that asyc script in html that grabs the es-module-shims thing since I don’t think it will work but in worst case it can be commented out
+
+
+Also I deleted an import map that was getting three: unpkg … from somewhere since it’s all local
+
+
+In the main project script there is still another reference or two to unpkg for smaller things but not libraries so that’s dealt with.
